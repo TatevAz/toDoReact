@@ -1,27 +1,26 @@
 import React, { Component } from "react";
+import Header from "./components/Header";
+import List from "./components/List";
+import Filter from "./components/Filter";
 
-class ToDoList extends Component {
+class ToDoListRoot extends Component {
   constructor() {
     super();
     this.state = {
       tasks: [],
-      newTask: "",
     };
   }
 
-  onInputchange = (e) => {
+  addTask = (newTaskName) => {
     this.setState({
-      newTask: e.target.value,
+      tasks: [
+        ...this.state.tasks,
+        {
+          title: newTaskName,
+          checked: false,
+        },
+      ],
     });
-  };
-
-  addTask = () => {
-    if (this.state.newTask !== "") {
-      this.setState((prevTask) => ({
-        tasks: [...prevTask.tasks, this.state.newTask],
-        newTask: "",
-      }));
-    }
   };
 
   removeTask = (index) => {
@@ -32,28 +31,34 @@ class ToDoList extends Component {
     });
   };
 
+  onItemClick = (index) => {
+    this.setState({
+      tasks: this.state.tasks.map((el, i) => {
+        if (i === index) {
+          return {
+            ...el,
+            checked: !el.checked,
+          };
+        } else {
+          return el;
+        }
+      }),
+    });
+  };
+
   render() {
     return (
       <div>
-        <h1>To-Do List</h1>
-        <input
-          type="text"
-          placeholder="Add something important!"
-          value={this.state.newTask}
-          onChange={this.onInputchange}
+        <Header add={this.addTask} />
+        <List
+          toggleTask={this.onItemClick}
+          tasks={this.state.tasks}
+          removeTask={this.removeTask}
         />
-        <button onClick={this.addTask}>Add</button>
-        <div>
-          {this.state.tasks.map((task, index) => (
-            <div key={index}>
-              {task}
-              <button onClick={() => this.removeTask()}>Remove</button>
-            </div>
-          ))}
-        </div>
+        <Filter />
       </div>
     );
   }
 }
 
-export default ToDoList;
+export default ToDoListRoot;
